@@ -2,23 +2,26 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-var logger = new ServiceCollection()
-    .AddLogging(builder => builder
+var di = new ServiceCollection();
+//注入日志相关服务
+var services = di.AddLogging(builder => builder
         .AddConsole()
-        .AddSimpleConsole(options => options.IncludeScopes = true))
-    .BuildServiceProvider()
-    .GetRequiredService<ILogger<Program>>();
+       .AddSimpleConsole(options => options.IncludeScopes = true));
+var serviceProvider = services.BuildServiceProvider();
 
+
+var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 using (logger.BeginScope($"Foobar Transaction[{Guid.NewGuid()}]"))
 {
     var stopwatch = Stopwatch.StartNew();
     await Task.Delay(500);
-    logger.LogInformation("Operation foo completes at {0}", stopwatch.Elapsed);
+    logger.LogInformation("操作 foo 完成耗时  {0}", stopwatch.Elapsed);
 
     await Task.Delay(300);
-    logger.LogInformation("Operation bar completes at {0}", stopwatch.Elapsed);
+    logger.LogInformation("操作 bar 完成耗时 {0}", stopwatch.Elapsed);
 
     await Task.Delay(800);
-    logger.LogInformation("Operation baz completes at {0}", stopwatch.Elapsed);
+    logger.LogInformation("操作 baz 完成耗时 {0}", stopwatch.Elapsed);
 }
+
 Console.Read();

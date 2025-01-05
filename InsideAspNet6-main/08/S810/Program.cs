@@ -3,18 +3,24 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 var random = new Random();
-var template = @"Method FoobarAsync is invoked.
-    Arguments: foo={foo}, bar={bar}
-    Return value: {returnValue}
-    Time:{time}";
+var template = @"方法 FoobarAsync 被调用完成.
+    参数: foo={foo}, bar={bar}
+    返回值: {returnValue}
+    时间:{time}";
+
 var log = LoggerMessage.Define<int, long, double, TimeSpan>(
-    logLevel: LogLevel.Information, 
-    eventId: 3721, 
+    logLevel: LogLevel.Information,
+    eventId: 3721,
     formatString: template);
-var logger = new ServiceCollection()
-    .AddLogging(builder => builder.AddConsole())
-    .BuildServiceProvider()
-    .GetRequiredService<ILogger<Program>>();
+
+var di = new ServiceCollection();
+//注入日志相关服务
+var services = di.AddLogging(builder => builder
+        .AddConsole());
+
+var serviceProvider = services.BuildServiceProvider();
+var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
 await FoobarAsync(random.Next(), random.Next());
 await FoobarAsync(random.Next(), random.Next());
 Console.Read();
