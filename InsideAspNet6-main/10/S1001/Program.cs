@@ -14,6 +14,7 @@ async Task ExecuteAsync()
     try
     {
         Console.Write($"{service.Id}; ");
+        Console.Write($"{service.GetHashCode()}; ");
         await Task.Delay(1000);
     }
     finally
